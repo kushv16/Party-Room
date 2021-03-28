@@ -1,16 +1,13 @@
 import React from 'react'
-import { render } from "react-dom";
+import ReactDom from "react-dom"
+import Home from "./Home"
 
-export const App = () => {
+const App = () => {
   return (
     <div>
-      <h1>Welcome</h1>
+      <Home/> 
     </div>
   )
 }
 
-// export default App
-
-
-const appDiv = document.getElementById("app");
-render(<App />, appDiv);
+ReactDom.render(<App/>,document.getElementById("app"))
