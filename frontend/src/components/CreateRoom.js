@@ -20,7 +20,7 @@ const CreateRoom = () => {
 
   const handleCreateRoomBtn = () => {
 
-    const reqestOptions = {
+    const requestOptions = {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({
@@ -29,7 +29,7 @@ const CreateRoom = () => {
       }),
     };
 
-    fetch("/api/create-room", reqestOptions)
+    fetch("/api/create-room", requestOptions)
       .then((response) => response.json())
       .then((data) => history.push('room/'+data.code))
   };
