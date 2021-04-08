@@ -1,8 +1,11 @@
 import React from "react"
+import { useHistory } from "react-router-dom";
 
 const JoinRoom = () => {
   return(
-    <h1>This is join room</h1>
+    <div>
+      This is join page
+    </div>
   )
 }
 

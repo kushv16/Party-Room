@@ -2,12 +2,12 @@ node_modules/
 # Byte-compiled / optimized / DLL files
 __pycache__/
 *.py[cod]
-
+**/__pycache__/
 __pycache__  
 *.pyc
 # C extensions
 *.so
-
+db.sqlite3
 # Distribution / packaging
 bin/
 build/
