@@ -87,7 +87,7 @@ const CreateRoom = () => {
         <Button
           color='primary'
           variant='contained'
-          to='/'
+          to='/create'
           onClick={handleCreateRoomBtn}
         >
           Create a room
@@ -98,7 +98,7 @@ const CreateRoom = () => {
         <Button
           color='secondary'
           variant='contained'
-          to='/join_room'
+          to='/'
           component={Link}
         >
           Go Back

@@ -1,18 +1,44 @@
-import React from "react"
+import React,{useEffect,useState} from "react"
 import {BrowserRouter as Router,Switch,Route,Link,Redirect} from "react-router-dom"
 import CreateRoom from "./CreateRoom"
 import JoinRoom from "./JoinRoom"
 import Room from "./Room"
-import {Grid, Button} from "@material-ui/core"
+import {Grid, Button, ButtonGroup, Typography} from "@material-ui/core"
+
+
 
 const Home = () => {
-  return(
-    <Router>
-      <Switch>
-        <Route exact path="/">
-          <Grid container spacing={2}>
-            <Grid item xs={6} align="center">
-              <Button
+  let [roomCode,setroomCode] = useState(null)
+
+  //https://dev.to/stlnick/useeffect-and-async-4da8
+  useEffect(() => {
+    (async () => {
+      fetch('/api/user-in-room')
+      .then(response => response.json())
+      .then(data => {
+        setroomCode(data.code)
+      })
+    })()
+  },[])
+
+  const clearRoomCode = () => {
+    setroomCode(null)
+  }
+
+  const HomePageRender = () => {
+    return(
+      <Grid container spacing={2}>
+          <Grid item xs={12} alignn="center">
+              <Typography
+              component="h2"
+              variant="h2"
+              align="center">
+                Room Party
+              </Typography>
+            </Grid>
+            <Grid item xs={12} align="center">
+              <ButtonGroup disableElevation variant="contained" color="primary">
+                <Button
               variant="contained"
               color="primary"
               to="/create"
@@ -20,22 +46,35 @@ const Home = () => {
               >
                 Create Room
               </Button>
-            </Grid>
-            <Grid item xs={6} alignn="center">
+            
               <Button
               variant="contained"
-              color="primary"
+              color="secondary"
               to="/join"
               component={Link}
               >
                 Join Room
               </Button>
-            </Grid>
+              </ButtonGroup>
+              </Grid>
           </Grid>
-          </Route>
+    )
+  }
+
+  return(
+    <Router>
+      <Switch>
+        <Route exact path="/" render={() => {
+          return roomCode?(<Redirect to={`room/${roomCode}`}/>):(<HomePageRender/>)
+        }}>
+        </Route>
         <Route path='/join' component={JoinRoom}/>
         <Route path='/create' component={CreateRoom}/>
-        <Route path='/room/:roomCode' component={Room}/>
+        <Route path='/room/:roomCode' 
+          render={ () => {
+            return <Room leaveRoomCallback={clearRoomCode}/>
+          }}
+        />
       </Switch>
     </Router>
   )
