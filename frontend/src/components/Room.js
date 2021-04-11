@@ -7,8 +7,9 @@ const Room = ({leaveRoomCallback}) => {
     
     let [guestPlaybackState,setGuestPlaybackState] = useState(false);
     let [votesToSkip,setVotesToSkip] = useState(2);
-    let [isHost,setIsHost] = useState('false') 
+    let [isHost,setIsHost] = useState(false) 
     let [showSettings,setShowSettings] = useState(false)
+    let [isAuthenticated,setIsAuthenticated] = useState(false)
     let params = useParams();
     let history = useHistory();
     
@@ -28,10 +29,34 @@ const Room = ({leaveRoomCallback}) => {
                 setVotesToSkip(data.votes_to_skip)
                 setGuestPlaybackState(data.guest_can_pause)
                 setIsHost(data.is_host)
+                if(isHost){
+                    authenticateSpotify();
+                }
             })
+            
     }
+
     getRoomDetails();
     
+    const authenticateSpotify = () => {
+        fetch('/spotify/is-authenticated')
+        .then(response => response.json())
+        .then(data => {
+            setIsAuthenticated(data.status)
+            if(!data.status){
+                fetch('/spotify/get-auth-url')
+                .then(response => response.json())
+                .then(data => {
+                    window.location.replace(data.url)
+                })
+            }
+            console.log(isAuthenticated)
+        })
+    }
+
+
+
+
     const handleLeaveRoomButton = () => {
         const requestOptions = {
             method:"POST",

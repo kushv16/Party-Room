@@ -5,6 +5,9 @@ __pycache__/
 **/__pycache__/
 __pycache__  
 *.pyc
+
+credentials.py
+
 # C extensions
 *.so
 db.sqlite3
