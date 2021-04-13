@@ -2,6 +2,7 @@ import React,{useState,useEffect} from 'react'
 import {useParams,useHistory} from 'react-router-dom'
 import {Typography,Button,Grid} from '@material-ui/core'
 import CreateRoom from "./CreateRoom"
+import MusicPlayer from "./MusicPlayer"
 
 const Room = ({leaveRoomCallback}) => {
     
@@ -10,11 +11,17 @@ const Room = ({leaveRoomCallback}) => {
     let [isHost,setIsHost] = useState(false) 
     let [showSettings,setShowSettings] = useState(false)
     let [isAuthenticated,setIsAuthenticated] = useState(false)
+    let [currentSong,setCurrentSong] = useState({})
     let params = useParams();
     let history = useHistory();
     
     const roomCode = params.roomCode
-    
+
+    useEffect(() => { 
+        const interval = setInterval(getRoomDetails,1000)
+        return () => clearInterval(interval)
+    },[])
+
     const getRoomDetails = () => {
         fetch('/api/get-room'+'?code='+roomCode).
             then(response => {
@@ -26,17 +33,15 @@ const Room = ({leaveRoomCallback}) => {
                 return response.json()
             }).
             then(data => {
-                setVotesToSkip(data.votes_to_skip)
-                setGuestPlaybackState(data.guest_can_pause)
-                setIsHost(data.is_host)
+                setVotesToSkip(data.votes_to_skip);
+                setGuestPlaybackState(data.guest_can_pause);
+                isHost = data.is_host;
                 if(isHost){
                     authenticateSpotify();
                 }
             })
-            
+        currentSongPlaying();    
     }
-
-    getRoomDetails();
     
     const authenticateSpotify = () => {
         fetch('/spotify/is-authenticated')
@@ -50,11 +55,24 @@ const Room = ({leaveRoomCallback}) => {
                     window.location.replace(data.url)
                 })
             }
-            console.log(isAuthenticated)
         })
     }
 
 
+
+    const currentSongPlaying = () => {
+        fetch('/spotify/current-song')
+        .then(response => {
+            if(!response.ok){
+                return {}
+            }else{
+                return response.json()
+            }
+        })
+        .then(data => {
+            setCurrentSong(data)
+        })
+    }
 
 
     const handleLeaveRoomButton = () => {
@@ -114,21 +132,7 @@ const Room = ({leaveRoomCallback}) => {
                     Room code : {roomCode}
                 </Typography>
             </Grid>
-            <Grid item xs={12} align="center">
-                <Typography variant="h4" component="h4">
-                    Votes : {votesToSkip}
-                </Typography>
-            </Grid>
-            <Grid item xs={12} align="center">
-                <Typography variant="h4" component="h4">
-                    Playback : {guestPlaybackState.toString()}
-                </Typography>
-            </Grid>
-            <Grid item xs={12} align="center">
-                <Typography variant="h4" component="h4">
-                    Host : {isHost.toString()}
-                </Typography>
-            </Grid>
+            <MusicPlayer {...currentSong} />
             {isHost ? renderSettingsButton() : null }
             <Grid item xs={12} align="center">
                 <Button color="secondary" variant="contained" onClick={handleLeaveRoomButton}>
